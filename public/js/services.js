@@ -1,9 +1,11 @@
 'use strict';
 
-/* Services */
+/* Services asdf */
+angular.module('blogcatServices', ['ngResource']).
+    factory('Articles', function($resource){
+  return $resource('articles/:verb', {}, {
+    query: {method:'GET', params:{verb: 'indexJSON'}, isArray:true},
+    delete: {method:'DELETE', params:{verb: 'destroy'}}
+  });
+});
 
-
-// Demonstrate how to register services
-// In this case it is a simple value service.
-angular.module('myApp.services', []).
-  value('version', '0.1');

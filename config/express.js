@@ -2,6 +2,14 @@
 /**
  * Module dependencies.
  */
+var csrfValue = function(req) {
+    var token = (req.body && req.body._csrf)
+        || (req.query && req.query._csrf)
+        || (req.headers['x-csrf-token'])
+        || (req.headers['x-xsrf-token']);
+    console.log('token' + token);
+    return token;
+};
 
 var express = require('express')
   , mongoStore = require('connect-mongo')(express)
@@ -68,8 +76,11 @@ module.exports = function (app, config, passport) {
 
     // adds CSRF support
     if (process.env.NODE_ENV !== 'test') {
-      app.use(express.csrf())
+      // app.use(express.csrf())  original code
+        app.use(express.csrf({value: csrfValue}));
     }
+
+      app.use(express.csrf({value: csrfValue}));
 
     // This could be moved to view-helpers :-)
     app.use(function(req, res, next){
@@ -77,7 +88,13 @@ module.exports = function (app, config, passport) {
       next()
     })
 
-    // routes should be at the last
+
+      app.use(function(req, res, next) {
+          res.cookie('XSRF-TOKEN', req.session._csrf);
+          next();
+      });
+
+      // routes should be at the last
     app.use(app.router)
 
     // assume "not found" in the error msgs

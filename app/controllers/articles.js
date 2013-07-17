@@ -28,6 +28,7 @@ exports.load = function(req, res, next, id){
  */
 
 exports.index = function(req, res){
+    console.log("test");
   var page = (req.param('page') > 0 ? req.param('page') : 1) - 1
   var perPage = 30
   var options = {
@@ -38,7 +39,7 @@ exports.index = function(req, res){
   Article.list(options, function(err, articles) {
     if (err) return res.render('500')
     Article.count().exec(function (err, count) {
-      res.render('articles/index', {
+      res .render('articles/index', {
         title: 'Articles',
         articles: articles,
         page: page + 1,
@@ -47,6 +48,28 @@ exports.index = function(req, res){
     })
   })
 }
+
+exports.test = function(req, res){
+    var str = [ { name: 'test' } ];
+    res.json(str);
+}
+
+exports.indexJSON = function(req, res){
+    var page = (req.param('page') > 0 ? req.param('page') : 1) - 1
+    var perPage = 30
+    var options = {
+        perPage: perPage,
+        page: page
+    }
+
+    Article.list(options, function(err, articles) {
+        if (err) return res.render('500')
+        Article.count().exec(function (err, count) {
+            res.json(articles);
+        })
+    })
+}
+
 
 /**
  * New article
@@ -129,6 +152,7 @@ exports.show = function(req, res){
  */
 
 exports.destroy = function(req, res){
+
   var article = req.article
   article.remove(function(err){
     req.flash('info', 'Deleted successfully')
